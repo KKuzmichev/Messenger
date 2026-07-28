@@ -54,6 +54,11 @@ app.include_router(attachments.router)
 app.include_router(ws.router)
 
 
+@app.get("/")
+async def root():
+    return {"message": "Messenger API", "docs": "/docs", "health": "/health"}
+
+
 @app.get("/health")
 async def health():
     return {"status": "ok"}
