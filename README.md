@@ -10,9 +10,17 @@
 
 ### 1. PostgreSQL
 
-Убедитесь что PostgreSQL запущен:
-
+#### Linux / WSL
 ```bash
+sudo apt install postgresql postgresql-client  # Debian/Ubuntu
+sudo systemctl start postgresql
+pg_isready
+```
+
+#### macOS (Homebrew)
+```bash
+brew install postgresql@17
+brew services start postgresql@17
 pg_isready
 ```
 
@@ -26,9 +34,17 @@ psql -U postgres -h 127.0.0.1 -d messenger -c "GRANT ALL ON SCHEMA public TO mes
 
 ### 2. Установка
 
+#### Linux / WSL
 ```bash
 python3 -m venv .venv
 .venv/bin/pip install -e ".[dev]"
+```
+
+#### macOS
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e ".[dev]"
 ```
 
 ### 3. Настройка
@@ -55,8 +71,16 @@ SECRET_KEY=dev-secret-key-change-in-production
 ### 5. Запуск
 
 **Backend:**
+
+Linux:
 ```bash
 .venv/bin/uvicorn app.main:app --reload
+```
+
+macOS:
+```bash
+source .venv/bin/activate
+uvicorn app.main:app --reload
 ```
 
 Откроется на `http://127.0.0.1:8000`
