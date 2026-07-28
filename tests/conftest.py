@@ -6,8 +6,8 @@ from app.database import get_db
 from app.main import app
 from app.models import Base
 
-TEST_DB_URL = "postgresql+asyncpg://messenger:messenger@localhost:5432/messenger_test"
-SYNC_DB_URL = "postgresql+psycopg2://messenger:messenger@localhost:5432/messenger_test"
+TEST_DB_URL = "postgresql+asyncpg://messenger:messenger@localhost:3454/messenger_test"
+SYNC_DB_URL = "postgresql+psycopg2://messenger:messenger@localhost:3454/messenger_test"
 
 sync_engine = create_engine(SYNC_DB_URL, pool_pre_ping=True)
 
