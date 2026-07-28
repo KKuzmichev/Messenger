@@ -10,7 +10,38 @@ const CRYPTO = {
     );
     this._keyPair = keyPair;
     this._privateKey = keyPair.privateKey;
+    await this._savePrivateKey(keyPair.privateKey);
     return keyPair;
+  },
+
+  async _savePrivateKey(privateKey) {
+    const raw = await crypto.subtle.exportKey("pkcs8", privateKey);
+    localStorage.setItem("private_key", this._arrayBufferToHex(raw));
+    const pub = await crypto.subtle.exportKey("raw", this._keyPair.publicKey);
+    localStorage.setItem("public_key", this._arrayBufferToHex(pub));
+  },
+
+  async loadPrivateKey() {
+    const privHex = localStorage.getItem("private_key");
+    const pubHex = localStorage.getItem("public_key");
+    if (!privHex || !pubHex) return false;
+    try {
+      const privRaw = this._hexToArrayBuffer(privHex);
+      const privKey = await crypto.subtle.importKey(
+        "pkcs8", privRaw,
+        { name: "ECDH", namedCurve: "P-256" },
+        true, ["deriveKey", "deriveBits"]
+      );
+      const pubRaw = this._hexToArrayBuffer(pubHex);
+      const pubKey = await crypto.subtle.importKey(
+        "raw", pubRaw,
+        { name: "ECDH", namedCurve: "P-256" },
+        true, []
+      );
+      this._privateKey = privKey;
+      this._keyPair = { privateKey: privKey, publicKey: pubKey };
+      return true;
+    } catch { return false; }
   },
 
   async exportPublicKey() {

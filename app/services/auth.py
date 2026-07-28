@@ -64,3 +64,10 @@ async def search_users(db: AsyncSession, query: str, limit: int = 20) -> list[Us
         select(User).where(User.username.ilike(f"%{query}%")).limit(limit)
     )
     return list(result.scalars().all())
+
+
+async def update_public_key(db: AsyncSession, user: User, public_key: str) -> User:
+    user.public_key = public_key.encode()
+    await db.commit()
+    await db.refresh(user)
+    return user

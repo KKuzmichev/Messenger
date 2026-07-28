@@ -108,6 +108,11 @@ $("logout-btn").onclick = logout;
 
 // --- App ---
 async function loadApp() {
+  if (!(await CRYPTO.loadPrivateKey())) {
+    await CRYPTO.generateKeyPair();
+    const pub = await CRYPTO.exportPublicKey();
+    await api("PUT", "/api/users/me", { public_key: pub });
+  }
   hide("auth");
   show("app");
   hide("chat-placeholder");

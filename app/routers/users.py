@@ -1,12 +1,32 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from pydantic import BaseModel
+
 from app.database import get_db
 from app.dependencies import get_current_user_id
 from app.schemas.auth import UserResponse
 from app.services import auth as auth_service
 
+
+class UpdatePublicKeyRequest(BaseModel):
+    public_key: str
+
 router = APIRouter(prefix="/api/users", tags=["users"])
+
+
+@router.put("/me", response_model=UserResponse)
+async def update_me(body: UpdatePublicKeyRequest, user_id: str = Depends(get_current_user_id), db: AsyncSession = Depends(get_db)):
+    user = await auth_service.get_user_by_id(db, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    user = await auth_service.update_public_key(db, user, body.public_key)
+    return UserResponse(
+        id=str(user.id),
+        username=user.username,
+        display_name=user.display_name,
+        public_key=user.public_key.hex() if user.public_key else None,
+    )
 
 
 @router.get("/me", response_model=UserResponse)
