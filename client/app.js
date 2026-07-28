@@ -159,9 +159,10 @@ async function loadConversations(selectId = null) {
     div.className = "conv-item" + (c.id === selectId ? " active" : "");
     div.dataset.convId = c.id;
     const members = await api("GET", `/api/conversations/${c.id}`);
+    const myId = CURRENT_USER?.id;
     const names = await Promise.all(
       members.member_ids
-        .filter(id => id !== CURRENT_USER.id)
+        .filter(id => id !== myId)
         .slice(0, 3)
         .map(async id => {
           try { const u = await api("GET", `/api/users/${id}`); return u.display_name; }
@@ -363,4 +364,4 @@ function debounce(fn, ms) {
 }
 
 // --- Init ---
-if (TOKEN) loadApp();
+if (TOKEN) loadApp().catch(() => logout());
