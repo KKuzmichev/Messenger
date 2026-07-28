@@ -222,7 +222,7 @@ async function loadMessages() {
 
     let displayText = "🔒 Encrypted";
     try {
-      if (msg.ephemeral_key !== null && msg.ephemeral_key !== undefined) {
+      if (msg.ephemeral_key) {
         const sender = await api("GET", `/api/users/${msg.sender_id}`);
         if (sender.public_key) {
           const decrypted = await CRYPTO.decryptMessage(msg.ciphertext, msg.iv, sender.public_key);
@@ -261,14 +261,13 @@ async function sendMessage() {
   try {
     const conv = await api("GET", `/api/conversations/${CURRENT_CONV}`);
     const otherIds = conv.member_ids.filter(id => id !== CURRENT_USER.id);
-    if (otherIds.length > 0) {
-      const other = await api("GET", `/api/users/${otherIds[0]}`);
-      if (other.public_key) {
-        const encrypted = await CRYPTO.encryptMessage(text, other.public_key);
-        ciphertext = encrypted.ciphertext;
-        iv = encrypted.iv;
-        salt = encrypted.salt;
-      }
+    const targetId = otherIds.length > 0 ? otherIds[0] : CURRENT_USER.id;
+    const target = await api("GET", `/api/users/${targetId}`);
+    if (target.public_key) {
+      const encrypted = await CRYPTO.encryptMessage(text, target.public_key);
+      ciphertext = encrypted.ciphertext;
+      iv = encrypted.iv;
+      salt = encrypted.salt;
     }
   } catch (e) { console.warn("Encryption failed, sending unencrypted:", e); }
 
@@ -310,12 +309,11 @@ $("attach-btn").onclick = async () => {
         try {
           const conv = await api("GET", `/api/conversations/${CURRENT_CONV}`);
           const otherIds = conv.member_ids.filter(id => id !== CURRENT_USER.id);
-          if (otherIds.length > 0) {
-            const other = await api("GET", `/api/users/${otherIds[0]}`);
-            if (other.public_key) {
-              const enc2 = await CRYPTO.encryptMessage(msgText, other.public_key);
-              ciphertext = enc2.ciphertext; iv2 = enc2.iv; salt2 = enc2.salt;
-            }
+          const targetId = otherIds.length > 0 ? otherIds[0] : CURRENT_USER.id;
+          const target = await api("GET", `/api/users/${targetId}`);
+          if (target.public_key) {
+            const enc2 = await CRYPTO.encryptMessage(msgText, target.public_key);
+            ciphertext = enc2.ciphertext; iv2 = enc2.iv; salt2 = enc2.salt;
           }
         } catch (e) { console.warn("File msg encrypt failed:", e); }
       }
