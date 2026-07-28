@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    database_url: str = "postgresql+asyncpg://messenger:messenger@localhost:3454/messenger"
+    database_url: str = "postgresql+asyncpg://messenger:messenger@localhost:5434/messenger"
     secret_key: str = "change-me-in-production"
     access_token_expire_minutes: int = 30
     refresh_token_expire_days: int = 7

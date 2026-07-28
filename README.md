@@ -58,7 +58,7 @@ cp .env.example .env
 Убедитесь что в `.env` указан правильный `DATABASE_URL`:
 
 ```
-DATABASE_URL=postgresql+asyncpg://messenger:messenger@localhost:3454/messenger
+DATABASE_URL=postgresql+asyncpg://messenger:messenger@localhost:5434/messenger
 SECRET_KEY=dev-secret-key-change-in-production
 ```
 
