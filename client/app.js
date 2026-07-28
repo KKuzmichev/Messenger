@@ -222,12 +222,10 @@ async function loadMessages() {
 
     let displayText = "🔒 Encrypted";
     try {
-      if (msg.ephemeral_key) {
-        const sender = await api("GET", `/api/users/${msg.sender_id}`);
-        if (sender.public_key) {
-          const decrypted = await CRYPTO.decryptMessage(msg.ciphertext, msg.iv, sender.public_key);
-          displayText = decrypted;
-        }
+      const sender = await api("GET", `/api/users/${msg.sender_id}`);
+      if (sender.public_key) {
+        const decrypted = await CRYPTO.decryptMessage(msg.ciphertext, msg.iv, sender.public_key);
+        displayText = decrypted;
       }
     } catch {}
 
