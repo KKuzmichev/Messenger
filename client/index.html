@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Messenger</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Auth -->
+<div id="auth">
+  <div class="auth-box">
+    <h1>🔐 Messenger</h1>
+
+    <div id="login-form">
+      <input id="login-username" type="text" placeholder="Username" autocomplete="username">
+      <input id="login-password" type="password" placeholder="Password" autocomplete="current-password">
+      <button id="login-btn">Sign In</button>
+      <div class="link" id="show-register">Create account</div>
+    </div>
+
+    <div id="register-form" class="hidden">
+      <input id="reg-username" type="text" placeholder="Username" autocomplete="off">
+      <input id="reg-display-name" type="text" placeholder="Display name" autocomplete="off">
+      <input id="reg-password" type="password" placeholder="Password (min 8 chars)" autocomplete="new-password">
+      <button id="register-btn">Create Account</button>
+      <div class="link" id="show-login">Already have an account?</div>
+    </div>
+  </div>
+</div>
+
+<!-- App -->
+<div id="app" class="hidden">
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h2>Messenger</h2>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span id="current-user" style="font-size:13px;color:#666;"></span>
+        <button id="logout-btn">Logout</button>
+      </div>
+    </div>
+
+    <div class="search-box">
+      <input id="user-search" type="text" placeholder="Search users...">
+    </div>
+
+    <div class="sidebar-actions">
+      <button id="create-group-btn">+ New Group</button>
+    </div>
+
+    <div id="users-list"></div>
+    <hr>
+    <div id="conversations-list"></div>
+  </div>
+
+  <div class="main">
+    <div class="chat-header">
+      <h3 id="chat-title">Select a conversation</h3>
+    </div>
+
+    <div id="chat-placeholder" class="placeholder">
+      <span>Select a conversation to start chatting</span>
+    </div>
+
+    <div id="messages-list" class="messages hidden"></div>
+
+    <div id="send-area" class="send-area hidden">
+      <button id="attach-btn" title="Attach file">📎</button>
+      <textarea id="message-input" rows="1" placeholder="Type a message..."></textarea>
+      <button id="send-btn">Send</button>
+    </div>
+  </div>
+</div>
+
+<script src="crypto.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
