@@ -171,7 +171,8 @@ async function loadConversations(selectId = null) {
     const lastMsg = c.last_message
       ? new Date(c.last_message.created_at).toLocaleTimeString()
       : "";
-    div.innerHTML = `<span>${c.type === "direct" ? "" : "👥 "}${escapeHtml(names.join(", ") || "Empty group")}</span>
+    const icon = c.type === "self" ? "⭐ " : c.type === "direct" ? "" : "👥 ";
+    div.innerHTML = `<span>${icon}${escapeHtml(c.type === "self" ? "Избранное" : names.join(", ") || "Empty group")}</span>
       <span class="conv-time">${lastMsg}</span>`;
     div.onclick = () => openConversation(c.id);
     list.appendChild(div);
@@ -329,6 +330,16 @@ $("attach-btn").onclick = async () => {
     } catch (e) { alert("Upload failed: " + e.message); }
   };
   fileInput.click();
+};
+
+// --- Favorites (self chat) ---
+$("favorites-btn").onclick = async () => {
+  try {
+    const conv = await api("POST", "/api/conversations", {
+      type: "self", member_ids: [],
+    });
+    await loadConversations(conv.id);
+  } catch (e) { alert("Failed to open Favorites: " + e.message); }
 };
 
 // --- Create group ---

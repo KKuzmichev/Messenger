@@ -16,24 +16,43 @@ async def create_conversation(
     db: AsyncSession, conv_type: str, member_ids: list[str], creator_id: str
 ) -> Conversation:
     creator_uuid = _to_uuid(creator_id)
-    member_uuids = [_to_uuid(m) for m in member_ids]
 
-    if conv_type == "direct":
+    if conv_type == "self":
+        existing = await _find_self_conversation(db, creator_uuid)
+        if existing:
+            return existing
+        member_uuids = [creator_uuid]
+    elif conv_type == "direct":
+        member_uuids = [_to_uuid(m) for m in member_ids]
         existing = await _find_direct_conversation(db, member_uuids)
         if existing:
             return existing
+        member_uuids = list(set(member_uuids + [creator_uuid]))
+    else:
+        member_uuids = list(set([_to_uuid(m) for m in member_ids] + [creator_uuid]))
 
     conv = Conversation(type=conv_type)
     db.add(conv)
     await db.flush()
 
-    all_members = list(set(member_uuids + [creator_uuid]))
-    for uid in all_members:
+    for uid in member_uuids:
         db.add(Participant(conversation_id=conv.id, user_id=uid))
 
     await db.commit()
     await db.refresh(conv)
     return conv
+
+
+async def _find_self_conversation(db: AsyncSession, user_uuid: uuid.UUID) -> Conversation | None:
+    result = await db.execute(
+        select(Conversation).where(
+            Conversation.type == "self",
+            Conversation.id.in_(
+                select(Participant.conversation_id).where(Participant.user_id == user_uuid)
+            ),
+        )
+    )
+    return result.scalar_one_or_none()
 
 
 async def _find_direct_conversation(db: AsyncSession, member_uuids: list[uuid.UUID]) -> Conversation | None:
